@@ -1,5 +1,5 @@
 run: build
-	./src/main
+	./main
 
 build:
-	clang++ main.cpp -o main
+	clang++ src/main.cpp -o main

@@ -29,7 +29,7 @@ fn main() {
         exit(1);
     }
     let pwd_out_as_char = 
-        String::from_utf8(command_out_pwd.stdout).expect("char* conversion fail");
+        String::from_utf8(command_out_pwd.stdout).unwrap();
     let pwd_trimmed = pwd_out_as_char.trim();
 
     let project_dir = format!("{}/{}", &pwd_trimmed, &project_name);
@@ -49,5 +49,4 @@ fn main() {
         println!("{}", String::from_utf8(copy_cmnd_out.stderr).unwrap());
         exit(1);
     }
-
 }

@@ -1,6 +1,4 @@
-use std::{env::{self}, process::{exit, Command}};
-
-const CONFIG_DIR: &str = "/Users/mai/Documents/My_bin/config";
+use std::{env::{self, current_exe}, process::{exit, Command}};
 
 fn main() {
 
@@ -24,29 +22,24 @@ fn main() {
 
     let command_out_pwd = Command::new("pwd")
         .output().expect("pwd fail");
-    if command_out_pwd.stderr.len() > 0 {
-        println!("{}", String::from_utf8(command_out_pwd.stderr).unwrap());
-        exit(1);
-    }
+
     let pwd_out_as_char = 
-        String::from_utf8(command_out_pwd.stdout).unwrap();
+        String::from_utf8(command_out_pwd.stdout).expect("char* conversion fail");
+    
     let pwd_trimmed = pwd_out_as_char.trim();
 
     let project_dir = format!("{}/{}", &pwd_trimmed, &project_name);
     println!("project created in: {}", &project_dir);
     
-    let mkdir_cmnd_out = Command::new("mkdir").arg(&project_dir)
+    Command::new("mkdir").arg(&project_dir)
         .output().expect("mkdir err");
-    if mkdir_cmnd_out.stderr.len() > 0 {
-        println!("{}", String::from_utf8(mkdir_cmnd_out.stderr).unwrap());
-        exit(1);
-    }
 
-    let copy_cmnd_out = Command::new("cp").arg("-r").arg(
-            format!("{}/c-project-creator/project_template/", CONFIG_DIR)
-        ).arg(&project_dir).output().expect("copy err");
-    if copy_cmnd_out.stderr.len() > 0 {
-        println!("{}", String::from_utf8(copy_cmnd_out.stderr).unwrap());
-        exit(1);
-    }
+    let exe_dir = current_exe().expect("cant get dir of exe")
+        .into_os_string().into_string().expect("cant convert os_string to string");
+    let exe_dir_stripped = exe_dir.strip_suffix("/c-project-creator").expect("couldnt remove suffix");
+
+    Command::new("cp").arg("-r").arg(
+            format!("{}/project_template/", &exe_dir_stripped)
+        )
+        .arg(&project_dir).output().expect("copy err");
 }

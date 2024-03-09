@@ -1,5 +1,7 @@
 use std::{env::{self, current_exe}, process::{exit, Command}};
 
+//TODO: Handle commmand stderrors
+
 fn main() {
 
     let args: Vec<String> = env::args().collect();

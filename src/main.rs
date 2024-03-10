@@ -6,7 +6,7 @@ fn main() {
     let gitignore_template = include_bytes!("./project_template/.gitignore");
     let makefile_template = include_bytes!("./project_template/Makefile");
 
-    let args: Vec<String> =std::env::args().collect();
+    let args: Vec<String> = std::env::args().collect();
 
     if args.len() > 2 {
         println!("too many arguments");

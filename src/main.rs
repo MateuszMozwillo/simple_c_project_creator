@@ -1,8 +1,10 @@
-use std::{env::{self, current_exe}, process::{exit, Command}};
-
-//TODO: Handle commmand stderrors
+use std::{env::{self}, fs, io::Write, process::exit};
 
 fn main() {
+
+    let main_cpp_template = include_bytes!("./project_template/src/main.cpp");
+    let gitignore_template = include_bytes!("./project_template/.gitignore");
+    let makefile_template = include_bytes!("./project_template/Makefile");
 
     let args: Vec<String> = env::args().collect();
 
@@ -22,26 +24,14 @@ fn main() {
 
     let project_name: String = args[1].clone();
 
-    let command_out_pwd = Command::new("pwd")
-        .output().expect("pwd fail");
+    fs::create_dir_all(format!("./{}/src", &project_name)).unwrap();
 
-    let pwd_out_as_char = 
-        String::from_utf8(command_out_pwd.stdout).expect("char* conversion fail");
-    
-    let pwd_trimmed = pwd_out_as_char.trim();
+    let mut makefile_file = fs::File::create(format!("./{}/Makefile", &project_name)).unwrap();
+    makefile_file.write_all(makefile_template).unwrap();
 
-    let project_dir = format!("{}/{}", &pwd_trimmed, &project_name);
-    println!("project created in: {}", &project_dir);
-    
-    Command::new("mkdir").arg(&project_dir)
-        .output().expect("mkdir err");
+    let mut gitignore_file = fs::File::create(format!("./{}/.gitignore", &project_name)).unwrap();
+    gitignore_file.write_all(gitignore_template).unwrap();
 
-    let exe_dir = current_exe().expect("cant get dir of exe")
-        .into_os_string().into_string().expect("cant convert os_string to string");
-    let exe_dir_stripped = exe_dir.strip_suffix("/c-project-creator").expect("couldnt remove suffix");
-
-    Command::new("cp").arg("-r").arg(
-            format!("{}/project_template/", &exe_dir_stripped)
-        )
-        .arg(&project_dir).output().expect("copy err");
-}
+    let mut main_file = fs::File::create(format!("./{}/src/main.cpp", &project_name)).unwrap();
+    main_file.write_all(main_cpp_template).unwrap();
+} 

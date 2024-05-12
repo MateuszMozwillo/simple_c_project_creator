@@ -1,5 +1,7 @@
+SRC = $(wildcard src/*.c)
+
 run: build
 	./main
 
 build:
-	clang++ src/main.cpp -o main
+	clang++ $(SRC) -o main
